@@ -142,7 +142,7 @@ renderCharacter :: FontAtlas -> Char -> IO Bool
 renderCharacter atlas @ FontAtlas { atlasFont = font } character = do
     index <- readIORef (atlasIndex atlas)
     if IM.member characterIndex index then return True else do
-        glyphSuccesses <- V.forM glyphs $ \(_, glyphIndex, rawCurves) -> renderGlyph atlas glyphIndex rawCurves
+        glyphSuccesses <- V.forM glyphs $ \rawGlyph -> renderGlyph atlas rawGlyph
         let success = V.and glyphSuccesses
         when success $ modifyIORef (atlasIndex atlas) (IM.insert characterIndex newDescriptor)
         return success
@@ -154,8 +154,10 @@ renderCharacter atlas @ FontAtlas { atlasFont = font } character = do
         }
     (advance, glyphs) = getCharacterGlyphsAndMetrics font character
     emSize = fromIntegral (unitsPerEm font)
-    processTransforms (scales, glyphIndex, _) = (transform, glyphIndex)
+    processTransforms rawGlyph = (transform, glyphIndex)
       where
+        scales = _rawGlyphCompositionScale rawGlyph
+        glyphIndex = _rawGlyphIndex rawGlyph
         transform = foldl' composeScales idmtx scales
         composeScales mtx (CompositeScaling a b c d e f) = mtx' .*. mtx
           where
@@ -173,11 +175,13 @@ renderCharacter atlas @ FontAtlas { atlasFont = font } character = do
               where
                 vf = max (abs v1) (abs v2)
 
-renderGlyph :: FontAtlas -> Int -> [UV.Vector (Int16, Int16)] -> IO Bool
-renderGlyph atlas @ FontAtlas { atlasFont = font, atlasOptions = options } glyphIndex rawCurves = do
+renderGlyph :: FontAtlas -> RawGlyph -> IO Bool
+renderGlyph atlas @ FontAtlas { atlasFont = font, atlasOptions = options } rawGlyph = do
     glyphs <- readIORef (atlasGlyphs atlas)
     if IM.member glyphIndex glyphs then return True else bakeGlyph
   where
+    glyphIndex = _rawGlyphIndex rawGlyph
+    rawCurves = _rawGlyphContour rawGlyph
     bakeGlyph = do
         let emSize = fromIntegral (unitsPerEm font)
             letterScale = fromIntegral (atlasLetterScale options)

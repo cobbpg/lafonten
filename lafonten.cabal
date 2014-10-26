@@ -27,7 +27,7 @@ library
     bytestring,
     bytestring-trie,
     vect,
-    FontyFruity >= 0.3.2,
+    FontyFruity >= 0.4,
     lambdacube-core,
     lambdacube-edsl,
     lambdacube-gl
