@@ -188,7 +188,7 @@ letterFillTriangles = concatMap (makeTris . concat . eliminateLoops . map extrac
             trimStart (Just (vi1, _, i1)) vs = vi1 : drop i1 vs
             trimEnd Nothing vs = vs
             trimEnd (Just (vi2, i2, _)) vs = take (length vs - i2) vs ++ [vi2]
-        searchDepth = 50
+        searchDepth = 20
         intersections = [findIntersection (take searchDepth (reverse c1)) (take searchDepth c2) | c1 <- curves | c2 <- tail (cycle curves)]
         findIntersection c1@(c11:c12:_) c2@(c21:c22:_) = go c1 1
           where
