@@ -253,8 +253,11 @@ letterOutlineTriangles outlineThickness letter = map processCurve letter
           where
             vFirst = if prevNextKept then head cur else newFirst
             vLast = if nextKept then last cur else newLast
-            newFirst = if abs denFirst > 1e-4 then ivFirst else (curF1 &+ prevL1) &* 0.5
-            newLast = if abs denLast > 1e-4 then ivLast else (curL1 &+ nextF1) &* 0.5
+            newFirst = if abs denFirst > 1e-4 && closeEnough avgFirst ivFirst then ivFirst else avgFirst
+            newLast = if abs denLast > 1e-4 && closeEnough avgLast ivLast then ivLast else avgLast
+            closeEnough v1 v2 = len (v1 &- v2) < outlineThickness
+            avgFirst = (curF1 &+ prevL1) &* 0.5
+            avgLast = (curL1 &+ nextF1) &* 0.5
             (ivFirst, denFirst) = intersection curF1 curF2 prevL1 prevL2
             (ivLast, denLast) = intersection curL1 curL2 nextF1 nextF2
             curF1:curF2:_ = cur
