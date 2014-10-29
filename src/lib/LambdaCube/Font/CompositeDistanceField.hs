@@ -72,12 +72,12 @@ bakeGlyph atlas @ FontAtlas { atlasFont = font, atlasOptions = options } curves 
     emSize = fromIntegral (unitsPerEm font)
 
     bakeMatrix = V3 (V3 bakeScale 0 0) (V3 0 bakeScale 0) (V3 (bakeX - 1) (bakeY - 1) 1)
-    bakeScale = 2 / emSize
+    bakeScale = 2 / emSize / 1.5
     bakePad = -outlineThickness
     Vec2 bakeX bakeY = (bakeOffset &+ Vec2 bakePad bakePad) &* (-bakeScale)
 
     blitMatrix = V3 (V3 blitScale 0 0) (V3 0 blitScale 0) (V3 blitX blitY 1)
-    blitScale = 2 / fromIntegral (atlasSize options) * letterScale
+    blitScale = 2 / fromIntegral (atlasSize options) * letterScale * 1.5
     Vec2 blitX blitY = atlasOffset
 
 clearSurface :: Renderer -> IO ()
@@ -101,7 +101,7 @@ bakePipeline letterScale = (blit . clear) emptyBuffer
     letterTexture = Texture (Texture2D (Float RGBA) n1) letterTextureSize NoMip [PrjFrameBuffer "" tix0 letterBakePipeline]
     letterTextureSize = V2 bakeScale bakeScale
     letterBakePipeline = (outline . fill) clearBuffer
-    bakeScale = fromIntegral letterScale * 2
+    bakeScale = fromIntegral letterScale * 3
 
     clear = Accumulate clearFragmentCtx PassAll clearFragmentShader clearFragmentStream
     blit = Accumulate blitFragmentCtx PassAll blitFragmentShader blitFragmentStream
