@@ -1,6 +1,9 @@
 {-# LANGUAGE ParallelListComp, OverloadedStrings, TypeOperators, DataKinds #-}
 
-module LambdaCube.Font.SimpleDistanceField (fontRenderer) where
+module LambdaCube.Font.SimpleDistanceField
+       ( fontRenderer
+       , sampleDistance
+       ) where
 
 import Data.ByteString (ByteString)
 import Data.Vect
@@ -23,6 +26,12 @@ type OutlineTriangles = [(Vec2, Float)]
 -- exported atlas is @Float Red@.
 fontRenderer :: FontRenderer
 fontRenderer = FontRenderer pipeline clearSurface bakeGlyph
+
+-- | A fragment shader snippet to sample the distance field.  Takes the texture slot name and the uv coordinates as parameters.
+sampleDistance :: ByteString -> Exp F V2F -> Exp F Float
+sampleDistance slotName uv = texture' (Sampler LinearFilter Repeat tex) uv
+  where
+    tex = TextureSlot slotName (Texture2D (Float Red) n1)
 
 pipeline :: FontAtlasOptions -> GPOutput SingleOutput
 pipeline options = makeSamplerOut [PrjFrameBuffer "" tix0 bakePipeline]

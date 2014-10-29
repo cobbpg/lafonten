@@ -109,28 +109,14 @@ testRender = renderQuad (renderText emptyBuffer)
         transform = Uni (IM33F "textTransform") :: Exp V M33F
         (pos, uv) = untup2 attr
 
-    textFragmentShader = if useCompositeDistanceField then compositeFragmentShader else simpleFragmentShader
-
-    simpleFragmentShader uv = FragmentOut (pack' (V4 result result result result) :. ZT)
+    textFragmentShader uv = FragmentOut (pack' (V4 result result result result) :. ZT)
       where
         result = step distance
-        distance = texture' (Sampler LinearFilter Repeat tex) uv
+        distance = case useCompositeDistanceField of
+            False -> SDF.sampleDistance "fontAtlas" uv
+            True -> CDF.sampleDistance "fontAtlas" uv
         step = smoothstep' (floatF 0.5 @- outlineWidth) (floatF 0.5 @+ outlineWidth)
         outlineWidth = Uni (IFloat "outlineWidth") :: Exp F Float
-        tex = TextureSlot "fontAtlas" (Texture2D (Float Red) n1)
-
-    compositeFragmentShader uv = FragmentOut (result :. ZT)
-      where
-        --result = pack' (V4 ((dw1 @+ step d1) @* floatF 0.5) (step distance) ((dw2 @+ step d2) @* floatF 0.5) (floatF 1))
-        result = pack' (V4 shade shade shade shade)
-        shade = step distance
-        distance = max' (max' (d1 @* dw1) (d2 @* dw2)) (min' d1 d2)
-        dw1 = step' (floatF 0.5) w1
-        dw2 = step' (floatF 0.5) w2
-        V4 d1 d2 w1 w2 = unpack' (texture' (Sampler LinearFilter Repeat tex) uv)
-        step = smoothstep' (floatF 0.5 @- outlineWidth) (floatF 0.5 @+ outlineWidth)
-        outlineWidth = Uni (IFloat "outlineWidth") :: Exp F Float
-        tex = TextureSlot "fontAtlas" (Texture2D (Float RGBA) n1)
 
     quadFragmentShader uv = FragmentOut (texture' (Sampler LinearFilter Repeat tex) uv :. ZT)
       where
