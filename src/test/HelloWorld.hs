@@ -6,7 +6,8 @@ import Data.Time.Clock
 import qualified Data.Trie as T
 import qualified Data.Vector.Storable as SV
 import Graphics.Text.TrueType
-import "GLFW-b" Graphics.UI.GLFW as GLFW
+import "GLFW-b" Graphics.UI.GLFW (WindowHint(..), OpenGLProfile(..), Key(..), KeyState(..))
+import qualified "GLFW-b" Graphics.UI.GLFW as GLFW
 import LambdaCube.Font.Atlas
 import LambdaCube.Font.Common
 import qualified LambdaCube.Font.SimpleDistanceField as SDF
@@ -27,14 +28,13 @@ main = do
         putStrLn "Usage: HelloWorld <ttf-file> [<pixels-per-em>]"
         exitSuccess
 
-    initialize
-    openWindow defaultDisplayOptions
-        { displayOptions_width              = 1024
-        , displayOptions_height             = 768
-        , displayOptions_openGLVersion      = (3, 2)
-        , displayOptions_openGLProfile      = CoreProfile
-        }
-    setWindowTitle "LambdaCube 3D Text Demo"
+    GLFW.init
+    mapM_ GLFW.windowHint
+        [ WindowHint'OpenGLProfile OpenGLProfile'Core
+        , WindowHint'ContextVersionMajor 3
+        , WindowHint'ContextVersionMinor 2
+        ]
+    Just mainWindow <- GLFW.createWindow 1024 768 "LambdaCube 3D Text Demo" Nothing Nothing
 
     Right font <- loadFontFile (head args)
     let fontRenderer = if useCompositeDistanceField then CDF.fontRenderer else SDF.fontRenderer
@@ -65,16 +65,20 @@ main = do
         letterPadding = atlasLetterPadding (atlasOptions atlas)
     uniformFTexture2D "fontAtlas" uniforms (getTextureData atlas)
 
+    let keyIsPressed key = do
+            keyState <- GLFW.getKey mainWindow key
+            return (keyState == KeyState'Pressed)
+
     startTime <- getCurrentTime
     flip fix (startTime, V2 (-0.95) 0, 0.2) $ \loop (prevTime, V2 ofsX ofsY, scale) -> do
         uniformM33F "textTransform" uniforms (V3 (V3 (scale * 0.75) 0 0) (V3 0 scale 0) (V3 ofsX ofsY 1))
         uniformFloat "outlineWidth" uniforms (min 0.5 (fromIntegral letterScale / (768 * fromIntegral letterPadding * scale * sqrt 2 * 0.75)))
         render renderer
-        swapBuffers
-        escPressed <- keyIsPressed KeyEsc
+        GLFW.swapBuffers mainWindow
+        escPressed <- keyIsPressed Key'Escape
         curTime <- getCurrentTime
         let dt = realToFrac (diffUTCTime curTime prevTime) :: Float
-        [left, right, up, down, zoomIn, zoomOut] <- mapM keyIsPressed [KeyLeft, KeyRight, KeyUp, KeyDown, CharKey 'Q', CharKey 'A']
+        [left, right, up, down, zoomIn, zoomOut] <- mapM keyIsPressed [Key'Left, Key'Right, Key'Up, Key'Down, Key'Q, Key'A]
         let inputX = (if right then -1 else 0) + (if left then 1 else 0)
             inputY = (if up then -1 else 0) + (if down then 1 else 0)
             inputScale = (if zoomOut then -1 else 0) + (if zoomIn then 1 else 0)
@@ -84,7 +88,8 @@ main = do
             ofsY' = ofsY * scaleChange + inputY * dt * 2
         unless escPressed (loop (curTime, V2 ofsX' ofsY', scale'))
 
-    terminate
+    GLFW.destroyWindow mainWindow
+    GLFW.terminate
 
 testRender :: Exp Obj (FrameBuffer 1 V4F)
 testRender = renderQuad (renderText emptyBuffer)
