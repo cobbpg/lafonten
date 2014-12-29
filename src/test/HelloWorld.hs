@@ -29,12 +29,15 @@ main = do
         exitSuccess
 
     GLFW.init
+    GLFW.defaultWindowHints
     mapM_ GLFW.windowHint
-        [ WindowHint'OpenGLProfile OpenGLProfile'Core
-        , WindowHint'ContextVersionMajor 3
-        , WindowHint'ContextVersionMinor 2
-        ]
+      [ WindowHint'ContextVersionMajor 3
+      , WindowHint'ContextVersionMinor 2
+      , WindowHint'OpenGLProfile OpenGLProfile'Core
+      , WindowHint'OpenGLForwardCompat True
+      ]
     Just mainWindow <- GLFW.createWindow 1024 768 "LambdaCube 3D Text Demo" Nothing Nothing
+    GLFW.makeContextCurrent (Just mainWindow)
 
     Right font <- loadFontFile (head args)
     let fontRenderer = if useCompositeDistanceField then CDF.fontRenderer else SDF.fontRenderer
@@ -75,6 +78,7 @@ main = do
         uniformFloat "outlineWidth" uniforms (min 0.5 (fromIntegral letterScale / (768 * fromIntegral letterPadding * scale * sqrt 2 * 0.75)))
         render renderer
         GLFW.swapBuffers mainWindow
+        GLFW.pollEvents
         escPressed <- keyIsPressed Key'Escape
         curTime <- getCurrentTime
         let dt = realToFrac (diffUTCTime curTime prevTime) :: Float
