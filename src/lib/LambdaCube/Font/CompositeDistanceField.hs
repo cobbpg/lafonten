@@ -1,4 +1,4 @@
-{-# LANGUAGE ParallelListComp, OverloadedStrings, TypeOperators, DataKinds #-}
+{-# LANGUAGE ParallelListComp, OverloadedStrings, TypeOperators, DataKinds, FlexibleContexts #-}
 
 module LambdaCube.Font.CompositeDistanceField
        ( fontRenderer
