@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, DataKinds #-}
+{-# LANGUAGE OverloadedStrings, DataKinds, FlexibleContexts #-}
 
 module LambdaCube.Font.Atlas
        ( createFontAtlas

@@ -13,6 +13,10 @@ cabal-version:       >=1.10
 extra-source-files:
     src/test/*.hs
 
+Flag test
+  Description: Enable building of demo application
+  Default:     False
+
 library
   hs-source-dirs:      src/lib
   exposed-modules:
@@ -33,3 +37,22 @@ library
     lambdacube-gl
 
   default-language:    Haskell2010
+
+executable lafonten-test
+  if flag(test)
+    Buildable: True
+  else
+    Buildable: False
+
+  hs-source-dirs:     src/test 
+  main-is:            HelloWorld.hs
+  default-language:   Haskell2010
+  build-depends:
+      base
+    , lafonten
+    , time >= 1.5.0.1
+    , bytestring-trie >= 0.2.4.1
+    , vector >= 0.10.12.3
+    , FontyFruity >= 0.5.3.1
+    , lambdacube-gl >= 0.2.2
+    , GLFW-b >= 1.4.7.3
