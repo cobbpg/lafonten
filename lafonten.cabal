@@ -53,6 +53,6 @@ executable lafonten-test
     , time >= 1.5.0.1
     , bytestring-trie >= 0.2.4.1
     , vector >= 0.10.12.3
-    , FontyFruity >= 0.5.3.1
+    , FontyFruity >= 0.5.3.2
     , lambdacube-gl >= 0.2.2
     , GLFW-b >= 1.4.7.3
