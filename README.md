@@ -1,6 +1,6 @@
 # LambdaCube Font Engine
 
-This is a work-in-progress project to provide font rendering capabilities for [LambdaCube 3D](https://github.com/lambdacube3d/lambdacube-eds).
+This is a work-in-progress project to provide font rendering capabilities for [LambdaCube 3D](https://github.com/lambdacube3d/lambdacube-edsl).
 
 The basic idea behind the composite distance field approximation method is described in a [blog post](http://lambdacube3d.wordpress.com/2014/11/12/playing-around-with-font-rendering/).
 
