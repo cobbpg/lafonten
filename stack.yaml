@@ -1,5 +1,7 @@
 resolver: lts-6.35
 
+allow-newer: true
+
 packages:
 - '.'
 
@@ -9,15 +11,6 @@ extra-deps:
 - lambdacube-core-0.2.0
 - lambdacube-edsl-0.2.0
 - lambdacube-gl-0.2.2
-- text-1.2.2.1
-- vector-0.10.12.3
-- vect-0.4.7
-- aeson-0.10.0.0
-- async-2.0.2
-- base-orphans-0.5.1
-- indentation-0.2.1.1
-- pretty-compact-1.0
-- QuickCheck-2.8.2
 
 flags:
   lafonten:
