@@ -1,6 +1,6 @@
 # LambdaCube Font Engine
 
-[![Build status](https://ci.appveyor.com/api/projects/status/tu2hic7823vfbjyy?svg=true)](https://ci.appveyor.com/project/csabahruska/lafonten)
+[![Build status](https://ci.appveyor.com/api/projects/status/y9s6bmkxk6ev8igv?svg=true)](https://ci.appveyor.com/project/csabahruska/lafonten-xk3qy)
 
 This is a work-in-progress project to provide font rendering capabilities for [LambdaCube 3D](https://github.com/lambdacube3d/lambdacube-edsl).
 
