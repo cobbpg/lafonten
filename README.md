@@ -8,6 +8,10 @@ The basic idea behind the composite distance field approximation method is descr
 
 ## Setup
 
+#### System Requirements
+- OS: Windows/Linux/OSX
+- Graphics: OpenGL 3.3 or better
+
 #### On **Linux** install the following libraries.
    i.e. on Ubuntu:
    ```
