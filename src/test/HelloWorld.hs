@@ -50,12 +50,12 @@ main = do
                 , "Move with arrows, zoom with A/Q."
                 , "árvíztűrő tükörfúrógép"
                 , "ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"
+                , "0123456789"
                 ]
     t2 <- getCurrentTime
     putStrLn $ "Text rendering time: " ++ show (diffUTCTime t2 t1)
 
     renderer <- compileRenderer (ScreenOut (PrjFrameBuffer "" tix0 testRender))
-    setScreenSize renderer 1024 768
 
     textBuffer <- compileMesh textMesh
     textObject <- addMesh renderer "textMesh" textBuffer []
@@ -74,8 +74,11 @@ main = do
 
     startTime <- getCurrentTime
     flip fix (startTime, V2 (-0.95) 0, 0.2) $ \loop (prevTime, V2 ofsX ofsY, scale) -> do
-        uniformM33F "textTransform" uniforms (V3 (V3 (scale * 0.75) 0 0) (V3 0 scale 0) (V3 ofsX ofsY 1))
-        uniformFloat "outlineWidth" uniforms (min 0.5 (fromIntegral letterScale / (768 * fromIntegral letterPadding * scale * sqrt 2 * 0.75)))
+        (winW, winH) <- GLFW.getWindowSize mainWindow
+        let aspectRatio = fromIntegral winH / fromIntegral winW
+        setScreenSize renderer (fromIntegral winW) (fromIntegral winH)
+        uniformM33F "textTransform" uniforms (V3 (V3 (scale * aspectRatio) 0 0) (V3 0 scale 0) (V3 ofsX ofsY 1))
+        uniformFloat "outlineWidth" uniforms (min 0.5 (fromIntegral letterScale / (768 * fromIntegral letterPadding * scale * sqrt 2 * aspectRatio)))
         render renderer
         GLFW.swapBuffers mainWindow
         GLFW.pollEvents
